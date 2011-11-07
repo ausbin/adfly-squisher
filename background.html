@@ -1,0 +1,11 @@
+<html>
+<head>
+<script>
+  // Called when the user clicks on the browser action.
+  chrome.browserAction.onClicked.addListener(function(tab) {
+    chrome.tabs.executeScript(
+        null, {code:"document.body.innerHTML = document.body.innerHTML.replace(/(http:\\/\\/)?adf.ly\\/([A-Za-z0-9]{5})/g, 'http://thesupremenerd.com/~austin/new/adfly/$2')"});
+  });
+</script>
+</head>
+</html>

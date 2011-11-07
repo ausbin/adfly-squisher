@@ -1,0 +1,23 @@
+{
+    "name" : "AdFly Squisher",
+    "version" : "0.1",
+    "description" : "Replace adfly links in pages with proxy links",
+
+    "permissions" : [
+        "tabs",
+        "http://*/*",
+        "https://*/*"
+    ],
+    "browser_action" : {
+        "name" : "AdFly Squisher",
+        "default_icon" : "adfly32.png",
+        "default_title" : "Squish AdFlies on this page",
+        "icons" : {
+            "48" : "adfly48.png",
+            "32" : "adfly32.png",
+            "16" : "adfly16.png",
+            "8"  : "adfly8.png"
+        }
+    },
+    "background_page" : "background.html"
+}
