@@ -1,11 +1,51 @@
 <html>
 <head>
 <script>
-  // Called when the user clicks on the browser action.
-  chrome.browserAction.onClicked.addListener(function(tab) {
-    chrome.tabs.executeScript(
-        null, {code:"document.body.innerHTML = document.body.innerHTML.replace(/(http:\\/\\/)?adf.ly\\/([A-Za-z0-9]{5})/g, 'http://thesupremenerd.com/~austin/new/adfly/$2')"});
-  });
+    function getRegexes () {
+        var regexes = JSON.parse(localStorage["preferences"])["regexes"];
+        var result = [];
+
+        for (var i = 0; i < regexes.length; i++) {
+            try {
+                var r = RegExp("^" + regexes[i] + "$");
+            } catch (SyntaxError) {
+                console.error("Invalid regex! #" + (i+1));
+                continue;
+            }
+
+            result.push(r);
+        }
+
+        return result;
+    }
+
+    function squishFlies (id) {
+      chrome.tabs.executeScript(
+          id, {code:"document.body.innerHTML = document.body.innerHTML.replace(/(http:\\/\\/)?adf.ly\\/([A-Za-z0-9]{5})/g, 'http://thesupremenerd.com/~austin/new/adfly/$2')"}
+      );
+    }
+
+    // Called when the user clicks on the browser action.
+    chrome.browserAction.onClicked.addListener(function () {squishFlies(null)});
+
+    chrome.tabs.onUpdated.addListener(function (id, info, tab) {
+        if (info.status == "complete") {
+            var regexes = getRegexes();
+
+            for (var i = 0; i < regexes.length; i++) {
+                if (regexes[i].test(tab.url)) {
+                    squishFlies(id);
+                    break;
+                }
+            }
+        }
+    });
+    
+    //chrome.tabs.onCreated.addListener(function (tab) {
+    //
+    //    console.log(tab);
+    //    //chrome.tabs.update(tab.id, {url:"http://thesupremenerd.com"});
+    //});
 </script>
 </head>
 </html>

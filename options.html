@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>AdFly Squisher Options</title>
+        <link rel="icon" href="../icons/bee16.png">
+        <style type="text/css">
+            body {
+                font-family: sans-serif;
+            }
+
+            h1.logo {
+                background: url('../icons/bee32.png') no-repeat;
+                padding-left: 45px;
+            }
+
+            #urlsfield {
+                width: 100%;
+                height: 250px;
+            }
+
+            fieldset {
+                border: none;
+                padding-top: 1em;
+            }
+
+            legend {
+                font-weight: bold;
+            }
+            /* for notifications */
+            div.hidden {
+                display: none;
+            }
+
+            div.notification {
+                width: 50%;
+                padding: 11px;
+                padding-left: 64;
+                font-size: 11px;
+                border-radius: 5px;
+            }
+
+            div.error {
+                background-color: #ED7979;
+                border: solid #FF4545;
+            }
+
+            div.info {
+                background-color: #CCD8FF;
+                border: solid #547CFF;
+            }
+
+            #notificationContainer {
+                margin-top: 10px;
+                margin-bottom: 10px;
+            }
+            
+            #urlsfieldlabel {
+                font-size: 10px;
+                margin-bottom: 2px;
+            }
+        </style>
+        <script type="text/javascript">
+            var urlsfield = null;
+
+            window.addEventListener("load", function (e) {
+                urlsfield = document.getElementById("urlsfield");
+                urlsfield.value = getRegexes().join("\r\n"); 
+            });
+            
+            var notifications = {
+                "clear" : function () {
+                    document.getElementById("notificationContainer").innerHTML = "";
+                    console.log("cleared notifications!");
+                },
+                "add" : function (msg, type) {
+                    type = type || "error";
+
+                    var notification = document.createElement("div");
+                    notification.classList.add("notification");
+                    notification.classList.add(type);
+                    notification.innerHTML = msg;
+
+                    document.getElementById("notificationContainer").appendChild(notification);
+                    console.log("added notification of type '" + type + "'!");
+                }
+            };
+
+            function getRegexes () {
+                if (!localStorage["preferences"])
+                    return [];
+
+                return JSON.parse(localStorage["preferences"])["regexes"];
+            }
+
+            function setRegexes (regexes) {
+                if (!localStorage["preferences"])
+                    localStorage["preferences"] = JSON.stringify({"regexes" : regexes});
+
+                var current = JSON.parse(localStorage["preferences"]);
+                current["regexes"] = regexes;
+                localStorage["preferences"] = JSON.stringify(current);
+            }
+
+            function submit () {
+                notifications.clear();
+                
+                // Windows newlines are annoying
+                var urls = urlsfield.value.replace("\r\n", "\n").split("\n");
+                var regexes = [];
+
+                for (var i = 0; i < urls.length; i++) {
+                    var url = urls[i];
+
+                    // if it's blank, go to the next url
+                    if (!url.trim())
+                        continue;
+                    
+                    try {
+                        RegExp("^" + url + "$");
+                    } catch (SyntaxError) {
+                        notifications.add("Invalid Regular Expression on line " + String(i+1) + "!");
+                        return;
+                    }
+                    
+                    regexes.push(url);
+                }
+                
+                setRegexes(regexes);
+                notifications.add("Success!", "info");
+            }
+        </script>
+    </head>
+    <body>
+        <h1 class="logo">Options</h1>
+
+        <div id="notificationContainer"></div>
+        <fieldset>
+        <legend>URLs to automatically replace AdFlies in</legend>
+        <label id="urlsfieldlabel" for="urlsfield">Any valid JavaScript regular expressions are accepted. Seperated by newlines. Blank lines are ignored. Start and end of string anchors are inserted on each side for you.</label>
+        <textarea id="urlsfield" placeholder="https?://www.minecraftforum.net/.*"></textarea>
+        </fieldset>
+        <button onclick="submit()">Go</button>
+    </body>
+</html>
