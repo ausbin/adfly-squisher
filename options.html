@@ -1,5 +1,23 @@
 <!DOCTYPE html>
 <html>
+<!--
+    options.html - Options page where user changes settings 
+    Copyright (C) 2011 Austin Adams
+
+    This program is free software; you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation; either version 2 of the License, or
+    (at your option) any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License along
+    with this program; if not, write to the Free Software Foundation, Inc.,
+    51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+-->
     <head>
         <title>AdFly Squisher Options</title>
         <link rel="icon" href="../icons/bee16.png">
@@ -114,6 +132,10 @@
                     // if it's blank, go to the next url
                     if (!url.trim())
                         continue;
+
+                    // if it's commented, skip it
+                    if (url[0] == "#")
+                        continue;
                     
                     try {
                         RegExp("^" + url + "$");
@@ -136,7 +158,7 @@
         <div id="notificationContainer"></div>
         <fieldset>
         <legend>URLs to automatically replace AdFlies in</legend>
-        <label id="urlsfieldlabel" for="urlsfield">Any valid JavaScript regular expressions are accepted. Seperated by newlines. Blank lines are ignored. Start and end of string anchors are inserted on each side for you.</label>
+        <label id="urlsfieldlabel" for="urlsfield">Any valid JavaScript regular expressions are accepted. Seperated by newlines. Lines that are blank or start with <code>#</code> are ignored. Start and end of string anchors are inserted on each side for you.</label>
         <textarea id="urlsfield" placeholder="https?://www.minecraftforum.net/.*"></textarea>
         </fieldset>
         <button onclick="submit()">Go</button>
