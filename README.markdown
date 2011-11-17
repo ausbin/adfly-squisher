@@ -12,7 +12,9 @@ If there are particular pages that tend to have adf.ly link a lot, just add a re
 Proxy links?
 ------------
 
-I didn't really know what else to call them. They're links to my server containg the trailing 5 characters of the adfly link. My server requests the adfly intermediate page (the one with the ad) that corresponds to that link. Then it finds the url in the javascript embedded in the page and redirects you there. Other than the access log, these aren't tracked.
+I didn't really know what else to call them. They're links to a script on an http server that is passed the trailing 5 characters of the adfly link. The server requests the adfly intermediate page (the one with the ad) that corresponds to that link. Then it finds the url in the javascript embedded in the page and redirects you there.
+
+You can change the proxy on the options page. If you'd like to run your own proxy, get the Django, Python/mod\_wsgi, or PHP script at [my adfly-proxy repository](https://github.com/uncleninja/adfly-proxy). 
 
 Regular expressions?
 --------------------
