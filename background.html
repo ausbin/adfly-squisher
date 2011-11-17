@@ -18,9 +18,9 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 -->
 <head>
+<script type="text/javascript" src="global.js"></script>
 <script>
-    function getRegexes () {
-        var regexes = JSON.parse(localStorage["preferences"])["regexes"];
+    function grindRegexes (regexes) {
         var result = [];
 
         for (var i = 0; i < regexes.length; i++) {
@@ -30,18 +30,23 @@
         return result;
     }
 
-    function squishFlies (id) {
+    function prepProxy (proxy) {
+        return proxy.replace("%s", "$$2");
+    }
+
+    function squishFlies (id, proxy) {
       chrome.tabs.executeScript(
-          id, {code:"document.body.innerHTML = document.body.innerHTML.replace(/(http:\\/\\/)?adf.ly\\/([A-Za-z0-9]{5})/g, 'http://thesupremenerd.com/~austin/new/adfly/$2')"}
+          id, {code:"document.body.innerHTML = document.body.innerHTML.replace(/(http:\\/\\/)?adf.ly\\/([A-Za-z0-9]{5})/g, '" + proxy + "')"}
       );
     }
 
     // Called when the user clicks on the browser action.
-    chrome.browserAction.onClicked.addListener(function () {squishFlies(null)});
+    chrome.browserAction.onClicked.addListener(function () {squishFlies(null, prepProxy(getPrefs()["proxy"]))});
 
     chrome.tabs.onUpdated.addListener(function (id, info, tab) {
         if (info.status == "complete") {
-            var regexes = getRegexes();
+            var prefs = getPrefs();
+            var regexes = grindRegexes(prefs["regexes"]);
 
             for (var i = 0; i < regexes.length; i++) {
                 try {
@@ -52,7 +57,7 @@
                 }
 
                 if (r.test(tab.url)) {
-                    squishFlies(id);
+                    squishFlies(id, prepProxy(prefs["proxy"]));
                     break;
                 }
             }

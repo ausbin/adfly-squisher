@@ -36,13 +36,19 @@
                 height: 250px;
             }
 
+            #proxyfield {
+                width: 50%;
+            }
+
             fieldset {
                 border: none;
-                padding-top: 1em;
+                padding-top: 5px;
             }
 
             legend {
                 font-weight: bold;
+                border-bottom: 1px solid lightgray;
+                padding-bottom: 3px;
             }
             /* for notifications */
             div.hidden {
@@ -52,19 +58,18 @@
             div.notification {
                 width: 50%;
                 padding: 11px;
-                padding-left: 64;
                 font-size: 11px;
                 border-radius: 5px;
             }
 
             div.error {
                 background-color: #ED7979;
-                border: solid #FF4545;
+                border: solid #FF4545 1px;
             }
 
             div.info {
                 background-color: #CCD8FF;
-                border: solid #547CFF;
+                border: solid #547CFF 1px;
             }
 
             #notificationContainer {
@@ -72,17 +77,25 @@
                 margin-bottom: 10px;
             }
             
-            #urlsfieldlabel {
+            label {
                 font-size: 10px;
                 margin-bottom: 2px;
             }
         </style>
+        <script type="text/javascript" src="global.js"></script>
         <script type="text/javascript">
+            // Maybe have an object that holds all of these?
             var urlsfield = null;
+            var proxyfield = null;
 
             window.addEventListener("load", function (e) {
+                proxyfield = document.getElementById("proxyfield");
                 urlsfield = document.getElementById("urlsfield");
-                urlsfield.value = getRegexes().join("\r\n"); 
+
+                var prefs = getPrefs();
+
+                proxyfield.value = prefs["proxy"];
+                urlsfield.value = prefs["regexes"].join("\r\n"); 
             });
             
             var notifications = {
@@ -103,6 +116,7 @@
                 }
             };
 
+
             function getRegexes () {
                 if (!localStorage["preferences"])
                     return [];
@@ -111,8 +125,12 @@
             }
 
             function setRegexes (regexes) {
-                if (!localStorage["preferences"])
-                    localStorage["preferences"] = JSON.stringify({"regexes" : regexes});
+                if (!localStorage["preferences"]) {
+                    var p = prefDefaults();
+                    p["regexes"] = regexes;
+
+                    localStorage["preferences"] = JSON.stringify(p);
+                }
 
                 var current = JSON.parse(localStorage["preferences"]);
                 current["regexes"] = regexes;
@@ -146,8 +164,18 @@
                     
                     regexes.push(url);
                 }
+
+                var proxy = proxyfield.value.trim();
+
+                if (!proxy) {
+                    notifications.add("You forgot to enter a proxy.", "error");
+                    return;
+                }
                 
-                setRegexes(regexes);
+                setPrefs({
+                    "regexes" : regexes,
+                    "proxy" : proxy
+                });
                 notifications.add("Success!", "info");
             }
         </script>
@@ -158,8 +186,13 @@
         <div id="notificationContainer"></div>
         <fieldset>
         <legend>URLs to automatically replace AdFlies in</legend>
-        <label id="urlsfieldlabel" for="urlsfield">Any valid JavaScript regular expressions are accepted. Seperated by newlines. Lines that are blank or start with <code>#</code> are ignored. Start and end of string anchors are inserted on each side for you.</label>
+        <label id="urlsfieldlabel" for="urlsfield">Any valid JavaScript regular expressions are accepted. Seperated by newlines. Lines that are blank or start with <code>#</code> are ignored. Start and end of string anchors are inserted on each side for you.</label><br />
         <textarea id="urlsfield" placeholder="https?://www.minecraftforum.net/.*"></textarea>
+        </fieldset>
+        <fieldset>
+        <legend>Proxy server</legend>
+        <label id="proxyfieldlabel" for="proxyfield">URL to change adfly links to. Insert <code>%s</code> for the trailing 5 characters.</label><br />
+        <input id="proxyfield" type="text" placeholder="http://example.com/adflyproxy.php?code=%s"></input>
         </fieldset>
         <button onclick="submit()">Go</button>
     </body>
