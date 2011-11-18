@@ -1,6 +1,6 @@
 {
     "name" : "AdFly Squisher",
-    "version" : "0.2.2",
+    "version" : "0.2.3",
     "description" : "Replace adfly links in pages with proxy links",
     "homepage_url" : "https://github.com/UncleNinja/adfly-squisher",
     "update_url" : "https://raw.github.com/UncleNinja/adfly-squisher/updater/updates.xml",
@@ -18,7 +18,7 @@
             "64"  : "icons/bee64.png",
             "48"  : "icons/bee48.png",
             "32"  : "icons/bee32.png",
-            "19"  : "icons/bee32.png",
+            "19"  : "icons/bee19.png",
             "16"  : "icons/bee16.png",
             "8"   : "icons/bee8.png"
         }
