@@ -1,4 +1,4 @@
-![Unhappy bee](https://raw.github.com/uncleninja/adfly-squisher/master/icons/icon48.png)
+![Unhappy bee](https://raw.github.com/uncleninja/adfly-squisher/master/icons/bee48.png)
 
 Squish Adf.ly URLs like you've always wanted.
 =============================================
