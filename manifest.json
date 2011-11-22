@@ -1,6 +1,6 @@
 {
     "name" : "AdFly Squisher",
-    "version" : "0.2.3",
+    "version" : "0.2.4",
     "description" : "Replace adfly links in pages with proxy links",
     "homepage_url" : "https://github.com/UncleNinja/adfly-squisher",
     "update_url" : "https://raw.github.com/UncleNinja/adfly-squisher/updater/updates.xml",
