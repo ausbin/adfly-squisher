@@ -1,17 +1,35 @@
-function prefDefaults () {
+preferences = {};
+
+preferences.defaults = function () {
     return {
        "regexes" : [],
        "proxy" : "http://thesupremenerd.com/~austin/new/adfly/%s"
     };
 }
 
-function setPrefs (prefs) {
+preferences.set = function (prefs) {
     localStorage["preferences"] = JSON.stringify(prefs);
 }
 
-function getPrefs () {
-    if (!localStorage["preferences"])
-        return prefDefaults(); 
+preferences.get = function (pad) {
+    if (typeof pad === "undefined")
+        pad = true;
 
-    return JSON.parse(localStorage["preferences"]);
+    if (!localStorage["preferences"])
+        return this.defaults(); 
+
+
+    var stored = JSON.parse(localStorage["preferences"]);
+    
+    if (pad) {
+        var defaults = this.defaults();
+
+        for (p in stored)
+            defaults[p] = stored[p];
+
+        return defaults;
+
+    } else {
+        return stored;
+    }
 }

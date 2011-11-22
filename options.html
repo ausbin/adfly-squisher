@@ -92,7 +92,7 @@
                 proxyfield = document.getElementById("proxyfield");
                 urlsfield = document.getElementById("urlsfield");
 
-                var prefs = getPrefs();
+                var prefs = preferences.get();
 
                 proxyfield.value = prefs["proxy"];
                 urlsfield.value = prefs["regexes"].join("\r\n"); 
@@ -172,7 +172,7 @@
                     return;
                 }
                 
-                setPrefs({
+                preferences.set({
                     "regexes" : regexes,
                     "proxy" : proxy
                 });

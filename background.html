@@ -41,11 +41,11 @@
     }
 
     // Called when the user clicks on the browser action.
-    chrome.browserAction.onClicked.addListener(function () {squishFlies(null, prepProxy(getPrefs()["proxy"]))});
+    chrome.browserAction.onClicked.addListener(function () {squishFlies(null, prepProxy(preferences.get()["proxy"]))});
 
     chrome.tabs.onUpdated.addListener(function (id, info, tab) {
         if (info.status == "complete") {
-            var prefs = getPrefs();
+            var prefs = preferences.get();
             var regexes = grindRegexes(prefs["regexes"]);
 
             for (var i = 0; i < regexes.length; i++) {
