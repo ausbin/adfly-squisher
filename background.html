@@ -89,36 +89,35 @@
     chrome.browserAction.onClicked.addListener(function () {squishFlies(null, prepProxy(preferences.get()["proxy"]))});
 
     chrome.tabs.onUpdated.addListener(function (id, info, tab) {
-        if (info.status == "complete") {
+        if (info.status == "loading") {
+            var prefs = preferences.get();
+            var isadfly = adflyurl.exec(tab.url)
+
             // Is it an adfly link?
-            if (adflyurl.test(tab.url)) {
-                console.log("FIXME: FORWARD USER TO DESTINATION: " + tab.url);
-            } else {
-                var prefs = preferences.get();
-                var regexes = grindRegexes(prefs["regexes"]);
+            if (isadfly) {
+                var code = isadfly[2];
+                var proxyurl = prefs["proxy"].replace("%s", code);
+                chrome.tabs.update(id, {url: proxyurl});
+            }
+        } else if (info.status == "complete") {
+            var prefs = preferences.get();
+            var regexes = grindRegexes(prefs["regexes"]);
 
-                for (var i = 0; i < regexes.length; i++) {
-                    try {
-                        var r = RegExp(regexes[i]);
-                    } catch (SyntaxError) {
-                        console.error("URL Regex number " + i + " is invalid!");
-                        continue;
-                    }
+            for (var i = 0; i < regexes.length; i++) {
+                try {
+                    var r = RegExp(regexes[i]);
+                } catch (SyntaxError) {
+                    console.error("URL Regex number " + i + " is invalid!");
+                    continue;
+                }
 
-                    if (r.test(tab.url)) {
-                        squishFlies(id, prepProxy(prefs["proxy"]));
-                        break;
-                    }
+                if (r.test(tab.url)) {
+                    squishFlies(id, prepProxy(prefs["proxy"]));
+                    break;
                 }
             }
         }
     });
-    
-    //chrome.tabs.onCreated.addListener(function (tab) {
-    //
-    //    console.log(tab);
-    //    //chrome.tabs.update(tab.id, {url:"http://thesupremenerd.com"});
-    //});
 </script>
 </head>
 </html>
