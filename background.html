@@ -20,6 +20,9 @@
 <head>
 <script type="text/javascript" src="global.js"></script>
 <script>
+    // Most codes are 5 long, but there's one that's 3 long on their website
+    var adflyurl = /https?:\/\/(www.)?adf.ly\/([A-Za-z0-9]{3,5})/;
+
     function grindRegexes (regexes) {
         var result = [];
 
@@ -36,7 +39,49 @@
 
     function squishFlies (id, proxy) {
       chrome.tabs.executeScript(
-          id, {code:"document.body.innerHTML = document.body.innerHTML.replace(/(http:\\/\\/)?adf.ly\\/([A-Za-z0-9]{5})/g, '" + proxy + "')"}
+          //     _ ____ _  _ ____ ____ ____ ____ _ ___  ___    ____ ___ ____ _ _  _ ____ 
+          //     | |__| |  | |__| [__  |    |__/ | |__]  |     [__   |  |__/ | |\ | | __ 
+          //    _| |  |  \/  |  | ___] |___ |  \ | |     |     ___]  |  |  \ | | \| |__] 
+          //
+          //                        `::+///////////:.             
+          //                     ./+/:.    -      -./o+/`         
+          //                   :o/`        ` `  . `o`:``/++.      
+          //                  s:                 ..--:---` :o-    
+          //                 +/             .-... `-:...     /o   
+          //                -s            `-:-.:/yo.:o  .:    .y` 
+          //                h             - hh`-`:s-.-:h//:-.  .y 
+          //               +/             .//+----`:.-.//.yh-   o:
+          //               h             `: .-:--.     -/--.`   `h
+          //               h                `.`  `yo+-. /.``     h
+          //               h                     +/:--.-`o       h
+          //               d           `        `/ `-o-`.:      `h
+          //               o-      .      ``    -hms-/oyh`      +/
+          //               -s                   :/:+/oo-s/      h`
+          //                y-         .        oshy++o/s.     -s 
+          //                 s:                ..-o//o+o.`    -s  
+          //                 -yso-          . ./+/:.```:    -o/   
+          //               :o:.  -++/`    -/.-:`   .:---/-++:     
+          //            `+o-  :s-   `:++oho:---.```.-/++/.        
+          //          :++`      /s.        `.-+N+::-.`      :. +` 
+          //        .s-           /o.        +o.+o-+.s /    :yos+ 
+          //       /o               /o-   `.yo-:/+sydhhy--++-     
+          //     -o/                  :o//sy-..`    -ooo+-        
+          //    o/                       -s                       
+          //    `                       /o                        
+          //    _   _    _  _    _  _ ____    _  _ _  _ _    ___ _ _    _ _  _ ____ 
+          //     \_/     |  |    |\ | |  |    |\/| |  | |     |  | |    | |\ | |___ 
+          //      |      |__|    | \| |__|    |  | |__| |___  |  | |___ | | \| |___ 
+
+          id, {code:
+            "var regex = /" + adflyurl.source + "/;" +
+            "var links = document.links;" +
+            
+            "for (var i = 0; i < links.length; i++) {" +
+            "   var link = links[i];" +
+            "   link.href = link.href.replace(regex, '" + proxy + "')" +
+            "}" 
+          }
+
       );
     }
 
@@ -45,20 +90,25 @@
 
     chrome.tabs.onUpdated.addListener(function (id, info, tab) {
         if (info.status == "complete") {
-            var prefs = preferences.get();
-            var regexes = grindRegexes(prefs["regexes"]);
+            // Is it an adfly link?
+            if (adflyurl.test(tab.url)) {
+                console.log("FIXME: FORWARD USER TO DESTINATION: " + tab.url);
+            } else {
+                var prefs = preferences.get();
+                var regexes = grindRegexes(prefs["regexes"]);
 
-            for (var i = 0; i < regexes.length; i++) {
-                try {
-                    var r = RegExp(regexes[i]);
-                } catch (SyntaxError) {
-                    console.error("URL Regex number " + i + " is invalid!");
-                    continue;
-                }
+                for (var i = 0; i < regexes.length; i++) {
+                    try {
+                        var r = RegExp(regexes[i]);
+                    } catch (SyntaxError) {
+                        console.error("URL Regex number " + i + " is invalid!");
+                        continue;
+                    }
 
-                if (r.test(tab.url)) {
-                    squishFlies(id, prepProxy(prefs["proxy"]));
-                    break;
+                    if (r.test(tab.url)) {
+                        squishFlies(id, prepProxy(prefs["proxy"]));
+                        break;
+                    }
                 }
             }
         }
