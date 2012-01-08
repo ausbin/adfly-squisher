@@ -2,6 +2,7 @@ preferences = {};
 
 preferences.defaults = function () {
     return {
+       "urlsfield" : "# Put your URLs here",
        "regexes" : [],
        "proxy" : "http://thesupremenerd.com/~austin/new/adfly/%s"
     };

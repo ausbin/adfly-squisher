@@ -95,7 +95,7 @@
                 var prefs = preferences.get();
 
                 proxyfield.value = prefs["proxy"];
-                urlsfield.value = prefs["regexes"].join("\r\n"); 
+                urlsfield.value = prefs["urlsfield"];
             });
             
             var notifications = {
@@ -173,6 +173,7 @@
                 }
                 
                 preferences.set({
+                    "urlsfield" : urlsfield.value,
                     "regexes" : regexes,
                     "proxy" : proxy
                 });
