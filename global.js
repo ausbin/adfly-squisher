@@ -36,7 +36,9 @@ preferences.defaults = function () {
             "# Youtube:\n" +
             "#https?://(www\\.)?youtube\\.com/.*\n",
         "regexes" : [],
-        "proxy" : "http://thesupremenerd.com/adfly/%s"
+        "proxy" : "http://thesupremenerd.com/adfly/%s",
+        "local" : true,
+        "intercept" : true
     };
 }
 

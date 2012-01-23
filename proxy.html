@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>proxying...</title>
+
+        <style type"text/css">
+            body {
+                font-family: monospace;
+                white-space: pre;
+            }
+        </style>
+
+        <script type="text/javascript">
+            function getopt () {
+                if (!location.hash)
+                    // no operation
+                    return null;
+
+                var delimiter = "/";
+                var delimiterloc = location.hash.indexOf(delimiter);
+
+                if (!~delimiterloc)
+                    throw new Error("Invalid operation.");
+
+                var key = location.hash.substring(1, delimiterloc);
+                var value = location.hash.substring(delimiterloc+delimiter.length);
+
+                return [key, value];
+            }
+
+            function adfly (code) {
+                console.log(code);
+
+                xhr = new XMLHttpRequest();
+                // Synchronous is okay because we're not doing anything, right?
+                xhr.open("GET", "http://adf.ly/"+code, false);
+                xhr.send(null);
+
+                if (xhr.status == 200) {
+                    var response = xhr.responseText;
+                } else {
+                    throw new Error("Bad response code from adfly.");
+                }
+
+                var matches = /var url = \'(.*?)\';/g.exec(response);
+
+                if (!matches)
+                    throw new Error("Bad response from adfly.");
+
+                var url = matches[1];
+
+                return url;
+            }
+
+            window.addEventListener("load", function (e) {
+                try {
+                    var opt = getopt();
+                } catch (e) {
+                    document.write("Missing the = in the operation.");
+                }
+
+                if (opt === null) {
+                    document.write("usage: "+window.location.origin+"/#{site}={code}");
+                    return;
+                }
+
+                var site = opt[0];
+                var code = opt[1];
+
+                console.log(site);
+                console.log(code);
+
+                if (site == "adfly" && /^[A-Za-z0-9]{3,5}$/.test(code)) {
+                    try {
+                        var url = adfly(code);
+                    } catch (e) {
+                        document.write(e.message);
+                        return;
+                    }
+
+                    window.location.href = url;
+                } else {
+                    document.write("Bad site or code.");
+                    return;
+                }
+            });
+        </script>
+    </head>
+    <body>
+    </body>
+</html>

@@ -23,6 +23,23 @@
     // Most codes are 5 long, but there's one that's 3 long on their website
     var adflyurl = /https?:\/\/(www.)?adf.ly\/([A-Za-z0-9]{3,5})/;
 
+    function getproxy (prep) {
+        prep = prep || false;
+    
+        var prefs = preferences.get();
+        var p = null;
+    
+        if (prefs["local"])
+            p = "chrome-extension://"+chrome.i18n.getMessage("@@extension_id")+"/proxy.html#adfly/%s";
+        else
+            p = prefs["proxy"];
+    
+        if (prep)
+            return p.replace("%s", "$$2");
+        else
+            return p;
+    }
+
     function grindRegexes (regexes) {
         var result = [];
 
@@ -31,10 +48,6 @@
         }
 
         return result;
-    }
-
-    function prepProxy (proxy) {
-        return proxy.replace("%s", "$$2");
     }
 
     function squishFlies (id, proxy) {
@@ -86,17 +99,22 @@
     }
 
     // Called when the user clicks on the browser action.
-    chrome.browserAction.onClicked.addListener(function () {squishFlies(null, prepProxy(preferences.get()["proxy"]))});
+    // getproxy() is defined in global.js
+    chrome.browserAction.onClicked.addListener(function () {squishFlies(null, getproxy(true))});
 
     chrome.tabs.onUpdated.addListener(function (id, info, tab) {
         if (info.status == "loading") {
-            var prefs = preferences.get();
             var isadfly = adflyurl.exec(tab.url)
 
             // Is it an adfly link?
             if (isadfly) {
+                var prefs = preferences.get();
+
+                if (!prefs["intercept"])
+                    return
+
                 var code = isadfly[2];
-                var proxyurl = prefs["proxy"].replace("%s", code);
+                var proxyurl = getproxy().replace("%s", code);
                 chrome.tabs.update(id, {url: proxyurl});
             }
         } else if (info.status == "complete") {
@@ -112,7 +130,7 @@
                 }
 
                 if (r.test(tab.url)) {
-                    squishFlies(id, prepProxy(prefs["proxy"]));
+                    squishFlies(id, getproxy(true));
                     break;
                 }
             }

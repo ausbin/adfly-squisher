@@ -19,7 +19,7 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 -->
     <head>
-        <title>AdFly Squisher Options</title>
+        <title>Adfly Squisher Options</title>
         <link rel="icon" href="../icons/bee16.png">
         <style type="text/css">
             body {
@@ -87,10 +87,14 @@
             // Maybe have an object that holds all of these?
             var urlsfield = null;
             var proxyfield = null;
+            var localbox = null;
+            var interceptbox = null;
 
             window.addEventListener("load", function (e) {
                 proxyfield = document.getElementById("proxyfield");
                 urlsfield = document.getElementById("urlsfield");
+                localbox = document.getElementById("localbox");
+                interceptbox = document.getElementById("interceptbox");
 
                 populateFields();
             });
@@ -111,11 +115,19 @@
                 }
             };
 
+            function toggleProxyField () {
+                proxyfield.disabled = localbox.checked;
+            }
+
             function populateFields (data) {
                 data = data || preferences.get();
 
                 proxyfield.value = data["proxy"];
                 urlsfield.value = data["urlsfield"];
+                localbox.checked = data["local"];
+                interceptbox.checked = data["intercept"];
+
+                toggleProxyField();
             }
 
             function getRegexes () {
@@ -185,7 +197,9 @@
                 preferences.set({
                     "urlsfield" : urlsfield.value,
                     "regexes" : regexes,
-                    "proxy" : proxy
+                    "proxy" : proxy,
+                    "local" : localbox.checked,
+                    "intercept" : interceptbox.checked
                 });
                 notifications.add("Success!", "info");
             }
@@ -196,10 +210,23 @@
 
         <div id="notificationContainer"></div>
         <fieldset>
-        <legend>URLs to automatically replace AdFlies in</legend>
+        <legend>Urls to automatically replace adfly links in</legend>
         <label id="urlsfieldlabel" for="urlsfield">Any valid JavaScript regular expressions are accepted. Seperated by newlines. Lines that are blank or start with <code>#</code> are ignored. Start and end of string anchors are inserted on each side for you.</label><br />
         <textarea id="urlsfield"></textarea>
         </fieldset>
+
+        <fieldset>
+        <legend>Intercept loading adfly pages</legend>
+        <label id="interceptboxlabel" for="interceptbox">Bypass adfly pages while they're loading (recommended - turn off if you're trying to browse the adfly website)</label><br />
+        <input id="interceptbox" type="checkbox"></input>
+        </fieldset>
+
+        <fieldset>
+        <legend>Use local proxy</legend>
+        <label id="localboxlabel" for="localbox">Use a local proxy instead of one on the web (faster, recommended).</label><br />
+        <input id="localbox" type="checkbox" onclick="toggleProxyField()"></input>
+        </fieldset>
+
         <fieldset>
         <legend>Proxy server</legend>
         <label id="proxyfieldlabel" for="proxyfield">URL to change adfly links to. Insert <code>%s</code> for the trailing 5 characters.</label><br />
