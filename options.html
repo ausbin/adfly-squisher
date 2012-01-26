@@ -89,12 +89,14 @@
             var proxyfield = null;
             var localbox = null;
             var interceptbox = null;
+            var destcountfield = null;
 
             window.addEventListener("load", function (e) {
                 proxyfield = document.getElementById("proxyfield");
                 urlsfield = document.getElementById("urlsfield");
                 localbox = document.getElementById("localbox");
                 interceptbox = document.getElementById("interceptbox");
+                destcountfield = document.getElementById("destcountfield");
 
                 populateFields();
             });
@@ -112,6 +114,8 @@
                     notification.innerHTML = msg;
 
                     document.getElementById("notificationContainer").appendChild(notification);
+
+                    window.scroll(0, 0);
                 }
             };
 
@@ -126,6 +130,7 @@
                 urlsfield.value = data["urlsfield"];
                 localbox.checked = data["local"];
                 interceptbox.checked = data["intercept"];
+                destcountfield.value = data["destcount"].toString();
 
                 toggleProxyField();
             }
@@ -193,13 +198,21 @@
                     notifications.add("You forgot to enter a proxy.", "error");
                     return;
                 }
+
+                var destcount = parseInt(destcountfield.value);
+
+                if (isNaN(destcount)) {
+                    notifications.add("Invalid number in destination count.", "error");
+                    return;
+                }
                 
                 preferences.set({
                     "urlsfield" : urlsfield.value,
                     "regexes" : regexes,
                     "proxy" : proxy,
                     "local" : localbox.checked,
-                    "intercept" : interceptbox.checked
+                    "intercept" : interceptbox.checked,
+                    "destcount" : destcount
                 });
                 notifications.add("Success!", "info");
             }
@@ -213,6 +226,12 @@
         <legend>Urls to automatically replace adfly links in</legend>
         <label id="urlsfieldlabel" for="urlsfield">Any valid JavaScript regular expressions are accepted. Seperated by newlines. Lines that are blank or start with <code>#</code> are ignored. Start and end of string anchors are inserted on each side for you.</label><br />
         <textarea id="urlsfield"></textarea>
+        </fieldset>
+
+        <fieldset>
+        <legend>Automatically resolve adfly links on pages</legend>
+        <label id="destcountfieldlabel" for="interceptbox">Change a maximum of this number of adfly links to their destinations whenever replacing adfly links. To turn off, provide <code>0</code>. To convert everything, try <code>-1</code>.</label><br />
+        <input id="destcountfield" type="text"></input>
         </fieldset>
 
         <fieldset>

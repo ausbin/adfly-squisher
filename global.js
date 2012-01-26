@@ -17,6 +17,8 @@
     51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
 */
 
+// Preferences
+
 preferences = {};
 
 preferences.defaults = function () {
@@ -38,7 +40,8 @@ preferences.defaults = function () {
         "regexes" : [],
         "proxy" : "http://thesupremenerd.com/adfly/%s",
         "local" : true,
-        "intercept" : true
+        "intercept" : true,
+        "destcount" : 0
     };
 }
 
@@ -67,4 +70,64 @@ preferences.get = function (pad) {
     } else {
         return stored;
     }
+}
+
+// Local Proxy
+proxy = {}
+
+proxy.nukecookies = function (callback) {
+    var cookiesfound = 0;
+    var cookiesnuked = 0;
+
+    var runcallback = function () {
+        cookiesnuked++;
+
+        if (cookiesnuked >= cookiesfound) {
+            console.log(cookiesnuked + " adfly cookies terminated");
+            callback();
+        }
+    }
+
+    chrome.cookies.getAll({ domain : "adf.ly" }, function (cookies) {
+        for (var i = 0; i < cookies.length; i++) {
+            cookiesfound++;
+
+            var cookie = cookies[i];
+            var url = "http" + (cookie.secure ? "s" : "") + "://" + cookie.domain + cookie.path;
+
+            chrome.cookies.remove({ url : url, name : cookies[i].name }, runcallback);
+        }
+        if (cookiesfound == 0)
+            callback();
+    });
+}
+
+// don't call directly - use proxy.geturl
+proxy.adfly = function (code) {
+    xhr = new XMLHttpRequest();
+    // Synchronous is okay because we're not doing anything, right?
+    // plus another callback is going to make me cry
+    xhr.open("GET", "http://adf.ly/"+code, false);
+    xhr.send(null);
+    
+    if (xhr.status == 200) {
+        var response = xhr.responseText;
+    } else {
+        throw new Error("Bad response code from adfly.");
+    }
+    
+    var matches = /var url = \'(.*?)\';/g.exec(response);
+    
+    if (!matches)
+        throw new Error("Bad response from adfly.");
+    
+    var url = matches[1];
+    
+    return url;
+}
+
+proxy.geturl = function (code, callback) {
+    this.nukecookies(function () {
+        callback(proxy.adfly(code));
+    })
 }

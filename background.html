@@ -23,10 +23,10 @@
     // Most codes are 5 long, but there's one that's 3 long on their website
     var adflyurl = /https?:\/\/(www.)?adf.ly\/([A-Za-z0-9]{3,5})/;
 
-    function getproxy (prep) {
+    function getproxy (prep, prefs) {
         prep = prep || false;
-    
-        var prefs = preferences.get();
+        prefs = prefs || preferences.get();
+
         var p = null;
     
         if (prefs["local"])
@@ -50,8 +50,20 @@
         return result;
     }
 
-    function squishFlies (id, proxy) {
-      chrome.tabs.executeScript(
+    function squishFlies (id, herp) {
+        var prefs = preferences.get();
+
+        var proxyurl = getproxy(true, prefs);
+        
+        chrome.extension.onRequest.addListener(
+            function (request, sender, sendResponse) {
+                var code = request.code;
+
+                proxy.geturl(code, function (url) { sendResponse({ url : url }) })
+            }
+        );
+
+        chrome.tabs.executeScript(
           //     _ ____ _  _ ____ ____ ____ ____ _ ___  ___    ____ ___ ____ _ _  _ ____ 
           //     | |__| |  | |__| [__  |    |__/ | |__]  |     [__   |  |__/ | |\ | | __ 
           //    _| |  |  \/  |  | ___] |___ |  \ | |     |     ___]  |  |  \ | | \| |__] 
@@ -88,10 +100,31 @@
           id, {code:
             "var regex = /" + adflyurl.source + "/;" +
             "var links = document.links;" +
+            "var dests = 0;" +
+            "var destsmax = " + ((prefs["destcount"] < 0)? "Infinity" : prefs["destcount"]).toString() + ";" +
+         
+            // This is quite clever if I do say so myself
+            "function callbackssuck (obj) {" + 
+            "   return function (response) {" +
+            "       console.log('out');" +
+            "       console.log(obj);" +
+            "       obj.href = response.url;" +
+            "   }" +
+            "}" +
             
             "for (var i = 0; i < links.length; i++) {" +
             "   var link = links[i];" +
-            "   link.href = link.href.replace(regex, '" + proxy + "')" +
+
+            "   if (dests+1 <= destsmax) {" +
+            "       var matches = regex.exec(link.href);" +
+            "       if (matches) {" +
+            "           console.log('in');" + 
+            "           dests++;" +
+            "           chrome.extension.sendRequest({ code : matches[2] }, callbackssuck(link));" +
+            "       }" +
+            "   } else {" +
+            "       link.href = link.href.replace(regex, '" + proxyurl + "')" +
+            "   }" +
             "}" 
           }
 
@@ -99,7 +132,6 @@
     }
 
     // Called when the user clicks on the browser action.
-    // getproxy() is defined in global.js
     chrome.browserAction.onClicked.addListener(function () {squishFlies(null, getproxy(true))});
 
     chrome.tabs.onUpdated.addListener(function (id, info, tab) {
@@ -114,8 +146,15 @@
                     return
 
                 var code = isadfly[2];
-                var proxyurl = getproxy().replace("%s", code);
-                chrome.tabs.update(id, {url: proxyurl});
+
+                if (prefs["local"]) {
+                    proxy.geturl(code, function (url) {
+                        chrome.tabs.update(id, {url: url});
+                    });
+                } else {
+                    var proxyurl = getproxy().replace("%s", code);
+                    chrome.tabs.update(id, {url: proxyurl});
+                }
             }
         } else if (info.status == "complete") {
             var prefs = preferences.get();
