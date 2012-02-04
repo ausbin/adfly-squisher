@@ -1,6 +1,6 @@
 {
     "name" : "Adfly Squisher",
-    "version" : "0.4.1",
+    "version" : "0.5",
     "description" : "Provides several ways to bypass adfly",
     "homepage_url" : "https://github.com/UncleNinja/adfly-squisher",
     "update_url" : "https://raw.github.com/UncleNinja/adfly-squisher/updater/updates.xml",
@@ -9,6 +9,7 @@
     "permissions" : [
         "tabs",
         "cookies",
+        "contextMenus",
         "<all_urls>"
     ],
     "browser_action" : {

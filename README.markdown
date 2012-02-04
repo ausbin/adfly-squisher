@@ -9,7 +9,7 @@ This Chrome extension has three main functions:
 
 * If you navigate to an adfly page, you will be redirected through a proxy server of your choice to the destination.
 * You can replace adfly links with proxy server links by clicking on the browser button or editing the url regular expression list in the settings.
-* You can also replace adfly links with their destinations via the same method described above.
+* Adfly links have a context menu item that allows you to bypass them
 
 LOl0lOLO wut are a regilar exprusan
 -----------------------------------
@@ -25,11 +25,6 @@ It's actually very efficient for a server (the proxy) to retrieve the adfly inte
 
 You can start one of your own using the code from [my adfly-proxy repository](https://github.com/uncleninja/adfly-proxy).
 
-How do I change adfly links to their destinations?
--------------------------------------------------------------
-
-Change the value of *Automatically resolve adfly links on pages* on the options page to the maximum number of adfly you want replaced with their destinations. By default it's `0` (which changes none). `-1` will convert all adfly links to their destinations.
-
 Does the link owner stil get money from this? 
 ---------------------------------------------
 
@@ -40,8 +35,8 @@ ITS BROOKEN WAT DO
 
 Report the problem on [the issues page](https://github.com/UncleNinja/adfly-squisher/issues).
 
-License?
---------
+License
+-------
 
 [GPL2](http://www.gnu.org/licenses/gpl-2.0.html). Please fork and redistribute.
 

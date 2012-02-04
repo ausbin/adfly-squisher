@@ -41,7 +41,6 @@ preferences.defaults = function () {
         "proxy" : "http://thesupremenerd.com/adfly/%s",
         "local" : true,
         "intercept" : true,
-        "destcount" : 0
     };
 }
 
