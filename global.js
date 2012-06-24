@@ -120,7 +120,13 @@ proxy.adfly = function (code) {
     if (!matches)
         throw new Error("Bad response from adfly.");
     
-    var url = "http://adf.ly" + matches[1];
+    var url = matches[1];
+    var prefix = "https://adf.ly";
+
+    if (url.substring(0, prefix.length) == prefix)
+        url = url.substring(prefix.length);
+
+    console.log(url);
     
     return url;
 }
