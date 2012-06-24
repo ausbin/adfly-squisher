@@ -116,17 +116,21 @@ proxy.adfly = function (code) {
     }
     
     var matches = /var url = \'(.*?)\';/g.exec(response);
-    
+
     if (!matches)
         throw new Error("Bad response from adfly.");
     
-    var url = matches[1];
+    var url = "http://adf.ly" + matches[1];
     
     return url;
 }
 
 proxy.geturl = function (code, callback) {
+    // removes cookies from adfly before and after bypassing the link
     this.nukecookies(function () {
-        callback(proxy.adfly(code));
+        var url = proxy.adfly(code);
+        proxy.nukecookies(function () {
+            callback(url);
+        });
     })
 }
