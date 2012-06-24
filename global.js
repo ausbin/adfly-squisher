@@ -125,9 +125,9 @@ proxy.adfly = function (code) {
 
     if (url.substring(0, prefix.length) == prefix)
         url = url.substring(prefix.length);
-
-    console.log(url);
     
+    url = "http://adf.ly" + url
+
     return url;
 }
 
