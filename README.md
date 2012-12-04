@@ -1,3 +1,5 @@
+**This extension is no longer maintained. If you still want to bypass adfly, try [my proxy](http://thesupremenerd.com/adfly)**
+
 ![Logo](https://raw.github.com/uncleninja/adfly-squisher/master/icons/bee64.png "it's genocide!")
 
 Bypass adfly. Save the world.
