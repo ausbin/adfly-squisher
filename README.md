@@ -1,11 +1,11 @@
-**This extension is no longer maintained. If you still want to bypass adfly, try [my proxy](http://thesupremenerd.com/adfly)**
+**This extension is broken, buggy, and unmaintained. Don't use it.**
 
-![Logo](https://raw.github.com/uncleninja/adfly-squisher/master/icons/bee64.png "it's genocide!")
+![Logo](https://raw.github.com/ausbin/adfly-squisher/master/icons/bee64.png "it's genocide!")
 
 Bypass adfly. Save the world.
 =============================
 
-[Download](https://raw.github.com/uncleninja/adfly-squisher/updater/adfly.crx). You know you want to.
+[Download](https://raw.github.com/ausbin/adfly-squisher/updater/adfly.crx). You know you want to.
 
 This Chrome extension has three main functions:
 
@@ -25,7 +25,6 @@ Proxy? This must be illegal!
 
 It's actually very efficient for a server (the proxy) to retrieve the adfly intermediate page (the one with the ads), find the destination, and redirect you there.
 
-You can start one of your own using the code from [my adfly-proxy repository](https://github.com/uncleninja/adfly-proxy).
 
 Does the link owner stil get money from this? 
 ---------------------------------------------
@@ -37,7 +36,7 @@ It's not working.
 
 Double check the options page. Do you have the features you want enabled?
 
-If you're still having problems, file [an effective bug report](http://www.chiark.greenend.org.uk/~sgtatham/bugs.html) on [the issues page](https://github.com/UncleNinja/adfly-squisher/issues).
+If you're still having problems, file [an effective bug report](http://www.chiark.greenend.org.uk/~sgtatham/bugs.html) on [the issues page](https://github.com/ausbin/adfly-squisher/issues).
 
 License
 -------
